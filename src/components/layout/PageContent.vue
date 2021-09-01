@@ -22,7 +22,7 @@ export default {
 
 .is-card {
   box-sizing: border-box;
-  padding: 20px;
+  padding: 10px;
   background: #FFFFFF;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.04);
   border-radius: 2px;
@@ -38,7 +38,7 @@ export default {
 
   .content {
     box-sizing: border-box;
-    padding: 20px;
+    padding: 8px;
     width: 100%;
     flex: 1;
     display: flex;
@@ -48,10 +48,9 @@ export default {
 
     .page-form-box {
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       flex: 0 0 auto;
       display: flex;
-      padding-top: 4px;
     }
 
     .page-main-box {
@@ -69,6 +68,9 @@ export default {
       //.form-item + .form-item {
       //   margin-right: 20px;
       //}
+      /deep/ .el-select, /deep/ .el-input {
+        width: 160px;
+      }
 
       .last-from-item {
         margin-right: 180px !important;
@@ -77,7 +79,7 @@ export default {
       .btn-box {
         position: absolute;
         right: 0px;
-        bottom: 0px;
+        bottom: 5px;
 
         .el-button + .el-button {
           margin-left: 16px;
@@ -93,9 +95,5 @@ export default {
       overflow: hidden;
     }
   }
-}
-
-/deep/ .el-select, /deep/ .el-input {
-  width: 160px;
 }
 </style>

@@ -32,10 +32,9 @@ export default {
 @import "../assets/style/var";
 
 .form-item {
-  margin-top: 16px;
-  // margin-right: 60px;
   display: flex;
   align-items: center;
+  margin: 5px 0;
 
   .form-label {
     flex: 0 0 auto;

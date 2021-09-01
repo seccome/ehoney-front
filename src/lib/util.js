@@ -1,3 +1,4 @@
+import { Message } from 'element-ui'
 /**
  * 时间格式化
  */
@@ -30,4 +31,62 @@ export const formatTime = function(date, mode = 'yyyy-MM-dd hh:mm') {
   }
 
   return format
+}
+
+/**
+ * 获取文件并且转成base64编码
+ * @param {Boolean} options.base64File 返回'base64'文件类型
+ * @param {Array} options.typeList 限制文件格式
+ * @param {Number} options.maxSize 限制文件最大bey
+ */
+ export function getFile (options = {}) {
+  let fileNodeList = [];
+  return new Promise((resolve, reject) => {
+      let fileNode = document.createElement('input');
+      fileNodeList.push(fileNode);
+      fileNode.setAttribute('type', 'file');
+      if (options.typeList && options.typeList.length) {
+          let acceptList = options.typeList.map(type => `.${type}`);
+          options.accept = acceptList.join(',');
+          fileNode.setAttribute('accept', options.accept);
+      }
+      
+      fileNode.click();
+      fileNode.onchange = function (e) {
+          let file = e.target.files[0],
+              fileName = file.name,
+              fileSize = file.size,
+              fileType = fileName.split('.').pop();
+          // 文件类型校验
+          if (options.typeList && !options.typeList.includes(fileType)) {
+              Message.error(`只允许上传以下附件类型：${options.accept}`);
+              return false;
+          }
+          // 文件大小校验
+          if (options.maxSize < fileSize) {
+              let sizeM = (options.maxSize / 1024 / 1024);
+              sizeM = sizeM.toFixed(2);
+              Message.error(`文件大小，不能大于${sizeM}M`);
+              return false;
+          }
+
+          // 返回文件
+          if (options.base64File) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            fileNode = null;
+            reader.onload = function () {
+                resolve({
+                    fileStr: reader.result,
+                    fileName
+                }, file);
+            }
+            reader.onerror = function (err) {
+                reject(err);
+            }
+          } else {
+            resolve(file);
+          }
+      }
+  });
 }

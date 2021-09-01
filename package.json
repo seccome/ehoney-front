@@ -1,6 +1,6 @@
 {
   "name": "decept-defense",
-  "version": "v1.0.5",
+  "version": "v1.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --groupId",
@@ -8,7 +8,7 @@
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "build_docker": "vue-cli-service build",
-    "tar": "npm run build_docker && cd dist && tar -czvf decept-defense-front.tar.gz ."
+    "tar": "yarn build_docker && cd dist && tar -czvf decept-defense-front.tar.gz ."
   },
   "dependencies": {
     "@antv/g6": "^4.2.7",
@@ -22,6 +22,8 @@
     "vue-router": "^3.4.9"
   },
   "devDependencies": {
+    "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
+    "@vue/babel-preset-jsx": "^1.2.4",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",

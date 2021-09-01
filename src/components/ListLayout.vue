@@ -78,7 +78,7 @@ export default {
         background: #f7f8fa;
 
         .cell {
-          padding-left: 40px;
+          padding-left: 10px;
           font-size: 14px;
           color: #1c1c1c;
           background: transparent;
@@ -90,7 +90,7 @@ export default {
         height: 48px;
 
         .cell {
-          padding-left: 40px;
+          padding-left: 10px;
           font-size: 13px;
           color: rgba(0, 0, 0, 0.87);
         }

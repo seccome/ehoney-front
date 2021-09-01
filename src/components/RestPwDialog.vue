@@ -1,46 +1,58 @@
 <template>
-  <el-dialog title="修改密码" visible width="400px" :close-on-click-modal="false" :before-close="close" v-loading="loading">
+  <el-dialog title="修改密码" visible width="400px" :close-on-click-modal="false" :before-close="close">
     <el-form ref="form" :model="form" :rules="rules" label-width="90px">
-      <el-form-item label="原始密码" prop="oldPwd">
-        <el-input v-model="form.oldPwd" :type="showOldPwd?'text':'password'">
+      <el-form-item label="原始密码" prop="OldPassword">
+        <el-input v-model="form.OldPassword" :type="showOldPwd?'text':'password'">
           <template slot="suffix">
-            <i v-if="showOldPwd" class="el-icon-view" @click="showOldPwd=false"></i>
-            <i v-else class="iconfont esign-icon-eye-close" @click="showOldPwd=true"></i>
+            <i v-if="showOldPwd" class="iconfont esign-icon-hide" style="cursor:pointer" @click="showOldPwd=false"></i>
+            <i v-else class="el-icon-view" style="cursor:pointer" @click="showOldPwd=true"></i>
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="新密码" prop="newPwd">
-        <el-input v-model="form.newPwd" :type="showNewPwd?'text':'password'">
+      <el-form-item label="新密码" prop="NewPassword">
+        <el-input v-model="form.NewPassword" :type="showNewPwd?'text':'password'">
           <template slot="suffix">
-            <i v-if="showNewPwd" class="el-icon-view" @click="showNewPwd=false"></i>
-            <i v-else class="iconfont esign-icon-eye-close" @click="showNewPwd=true"></i>
+            <i v-if="showNewPwd" class="iconfont esign-icon-hide" style="cursor:pointer" @click="showNewPwd=false"></i>
+            <i v-else class="el-icon-view" style="cursor:pointer" @click="showNewPwd=true"></i>
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="确认新密码" prop="repeatPwd">
-        <el-input v-model="form.repeatPwd" :type="showRepeatPwd?'text':'password'">
+      <el-form-item label="确认新密码" prop="RepeatPassword">
+        <el-input v-model="form.RepeatPassword" :type="showRepeatPwd?'text':'password'">
           <template slot="suffix">
-            <i v-if="showRepeatPwd" class="el-icon-view" @click="showRepeatPwd=false"></i>
-            <i v-else class="iconfont esign-icon-eye-close" @click="showRepeatPwd=true"></i>
+            <i v-if="showRepeatPwd" class="iconfont esign-icon-hide" style="cursor:pointer" @click="showRepeatPwd=false"></i>
+            <i v-else class="el-icon-view" style="cursor:pointer" @click="showRepeatPwd=true"></i>
           </template>
         </el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
-      <el-button type="primary" @click="validateForm">保 存</el-button>
+      <el-button type="primary" @click="validateForm" :loading="loading">保 存</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
+import {rules} from '@/lib/config';
+
 export default {
   data () {
     var validatePass = (rule, value, callback) => {
-      console.log(value)
+      if (value === '') {
+        callback(new Error('请输入新密码'));
+      } else if (value.length < 6) {
+        callback(new Error('密码长度不能小于6位!'));
+      } else if (!rules.pwdReg.test(value)) {
+        callback(new Error(rules.pwdRegTip));
+      } else {
+        callback();
+      }
+    };
+    var validateReptPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else if (value !== this.form.newPwd) {
+      } else if (value !== this.form.NewPassword) {
         callback(new Error('两次输入密码不一致!'));
       } else {
         callback();
@@ -52,14 +64,14 @@ export default {
       showNewPwd: false,
       showRepeatPwd: false,
       form: {
-        oldPwd: '',
-        newPwd: '',
-        repeatPwd: '',
+        OldPassword: '',
+        NewPassword: '',
+        RepeatPassword: '',
       },
       rules: {
-        oldPwd: [{ required: true, message: '请输入原始密码', trigger: 'blur' }],
-        newPwd: [{ required: true, message: '请输入新密码', trigger: 'blur' }],
-        repeatPwd: [{ required: true, validator: validatePass, trigger: 'blur' }]
+        OldPassword: [{ required: true, message: '请输入原始密码', trigger: 'blur' }],
+        NewPassword: [{ required: true, validator: validatePass, trigger: 'blur' }],
+        RepeatPassword: [{ required: true, validator: validateReptPass, trigger: 'blur' }]
       }
     }
   },
@@ -81,7 +93,7 @@ export default {
      */
     save() {
       this.loading = true;
-      this.$Server('/passwordupdate', 'POST', this.form).then(res => {
+      this.$axios.put(this.$apis.resetPwd, this.form).then(res => {
         this.loading = false;
         this.$message.success('修改成功！');
         this.close();

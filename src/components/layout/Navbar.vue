@@ -1,14 +1,17 @@
 <template>
   <div class="navbar">
     <div class="header f-clear">
-      <div class="header-item go-logout f-right" @click="goLogout"><i class="esign-icon-kongzhitai"></i>登出
-      </div>
-      <div class="header-item go-datav f-right" @click="isShowRestpwdDialog=true"><i class="esign-icon-kongzhitai"></i>修改密码
-      </div>
-      <div class="header-item go-datav f-right" @click="goDatav"><i class="esign-icon-kongzhitai"></i>
+      <el-dropdown class="f-right">
+        <div class="header-item"><i class="el-icon-user-solid mr-1"></i>{{userName}}</div>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="isShowRestpwdDialog=true"><i class="el-icon-edit-outline"></i>修改密码</el-dropdown-item>
+          <el-dropdown-item @click.native="goLogout"><i class="esign-icon-remove"></i>退出</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <div class="header-item f-right" @click="$router.push('/datav')"><i class="esign-icon-kongzhitai"></i>
         进入大屏
       </div>
-      <div class="header-item go-datav f-right" @click="goDownload"><i class="esign-icon-bianzu21"></i>
+      <div class="header-item f-right" @click="$router.push('/download')"><i class="esign-icon-bianzu21"></i>
         下载支持
       </div>
     </div>
@@ -28,28 +31,17 @@ export default {
     Breadcrumb,
     RestPwDialog
   },
-  data() {
+  data () {
     return {
-      isShowRestpwdDialog: false
+      isShowRestpwdDialog: false,
+      userName: localStorage.userName
     }
   },
   methods: {
-    goDatav () {
-      this.$router.push({
-        path: '/datav'
-      })
-    },
-    goDownload () {
-      this.$router.push({
-        path: '/download'
-      })
-    },
-    async goLogout () {
-      await this.$Server('/logout', 'get', {})
-
-      this.$router.push({
-        path: '/login'
-      })
+    goLogout () {
+      window.localStorage.setItem('userName', null);
+      window.localStorage.setItem('token', null);
+      this.$router.push({ path: '/login' });
     }
   }
 }
@@ -67,9 +59,9 @@ export default {
     background: @--background-color-black;
 
     .header-item {
+      padding: 0 10px;
       cursor: pointer;
       user-select: none;
-      width: 100px;
       height: 57px;
       margin-right: 20px;
       line-height: 57px;
@@ -79,17 +71,12 @@ export default {
 
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
-        color: rgba(4, 86, 254, 1);
+        // color: rgba(4, 86, 254, 1);
       }
 
       .esign-icon-kongzhitai {
         margin-right: 6px;
       }
-    }
-
-    .go-logout {
-      width: 60px;
-      //margin-left: 10px;
     }
   }
 }

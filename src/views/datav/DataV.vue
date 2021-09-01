@@ -1,7 +1,7 @@
 <template>
   <div class="datav">
     <div class="currentTime">{{ currentTime }}</div>
-    <div class="goControl" @click="goControl"><i class="esign-icon-daping"></i>进入控制台</div>
+    <div class="goControl" @click="$router.push({name: 'honeypotList'})"><i class="esign-icon-daping"></i>进入控制台</div>
     <DataScreen>
       <div class="data-main">
         <div class="data-main-l">
@@ -31,13 +31,12 @@
           </div>
           <div class="main-l-card-b">
             <DataCard is-very>
-              <el-table :data="tableData" class="datav-table"
-                        width="80%" height="100%" :border="false">
-                <el-table-column label="密罐类型" prop="honeyPotType"></el-table-column>
-                <el-table-column label="集群" prop="honeyip"></el-table-column>
-                <el-table-column label="攻击IP" prop="attackIP"></el-table-column>
-                <el-table-column label="地理位置" prop="location"></el-table-column>
-                <el-table-column label="攻击时间" prop="attackTimeText"></el-table-column>
+              <el-table :data="tableData" class="datav-table" width="80%" height="100%" :border="false">
+                <el-table-column label="攻击IP" prop="AttackIP"></el-table-column>
+                <el-table-column label="蜜罐IP" prop="HoneypotIP"></el-table-column>
+                <el-table-column label="协议类型" prop="ProtocolType"></el-table-column>
+                <el-table-column label="攻击时间" prop="AttackTime" width="160"></el-table-column>
+                <el-table-column label="攻击位置" prop="AttackLocation"></el-table-column>
               </el-table>
             </DataCard>
           </div>
@@ -78,8 +77,6 @@ export default {
       timer: null,
       // 列表
       tableData: [],
-      totalCount: 0,
-      currentPage: 1,
       loading: false,
       topattackips: [],
       topsourceips: [],
@@ -112,35 +109,29 @@ export default {
     },
     // 攻击ip top
     async gettopattackips() {
-      const res = await this.$Server('/gettopsourceips', 'POST', {})
-      console.log('攻击ip top', res)
+      const {data} = await this.$axios.get(this.$apis.attackIpSearch)
 
-      const { list } = res.data
-      this.topattackips = list.map(item => {
+      this.topattackips = data.map(item => {
         return {
           max: 30,
-          value: item.ipcount,
-          label: item.srchost,
-          percent: item.ipcount + '%'
+          value: item.Count,
+          label: item.Data,
+          percent: item.Count + '%'
         }
       })
     },
     // 攻击源top
     async gettopsourceips() {
-      const res = await this.$Server('/gettopsourceips', 'POST', {})
+      const {data} = await this.$axios.get(this.$apis.attackProbeIPSearch);
 
-      const { list } = res.data
-
-      this.topsourceips = list.map(item => {
+      this.topsourceips = data.map(item => {
         return {
           max: 100,
-          value: item.ipcount,
-          label: item.srchost,
-          percent: item.ipcount + '%'
+          value: item.Count,
+          label: item.Data,
+          percent: item.Count + '%'
         }
       })
-
-      console.log('攻击源top', res)
     },
     // 攻击日志
     async getattackLogList() {
@@ -148,23 +139,12 @@ export default {
       this.loading = true
 
       try {
-        const res = await this.$Server('/attackLogList', 'POST', {
+        const {data} = await this.$axios.post(this.$apis.trafficAttackSearch, {
           'pageSize': 5,
-          'pageNum': 1
+          'PageNumber': 1
         })
 
-        if (!res.data) {
-          this.totalCount = 0
-          this.tableData = []
-
-          return
-        }
-
-        const { list, total } = res.data
-
-        this.totalCount = total
-
-        this.tableData = list.map((item) => {
+        this.tableData = data.List.map((item) => {
           return {
             attackTimeText: formatTime(Number.parseInt(item.attackTime)),
             ...item
@@ -178,41 +158,26 @@ export default {
     // 攻击地区
     async gettopareas() {
       try {
-        const res = await this.$Server('/gettopareas', 'POST', {
-          'pageSize': 5,
-          'pageNum': 1
-        })
-
-        console.log('攻击地区', res)
-
-        const { list } = res.data
-
-        this.topareas = list.map((item) => {
+        const {data} = await this.$axios.get(this.$apis.attackLocationSearch)
+        this.topareas = data.map((item) => {
           return {
             attackTimeText: formatTime(item.attackTime / 1000),
-            ...item
+            province: item.Data,
+            areacount: item.Count
           }
         })
-
       } catch (e) {console.log(e)}
     },
     // 攻击类型
     async gettopattacktypes() {
       try {
-        const res = await this.$Server('/gettopattacktypes', 'POST', {
-          'pageSize': 5,
-          'pageNum': 1
-        })
-
-        console.log('攻击类型', res)
-
-        const { list, total } = res.data
-
-        this.topattacktypes = list.map((item) => {
+        const {data} = await this.$axios.get(this.$apis.attackProtocolSearch);
+      
+        this.topattacktypes = data.map((item) => {
           return {
-            max: total,
-            value: item.typecount,
-            label: item.attacktype,
+            max: 10,
+            value: item.Count,
+            label: item.Data,
             ...item
           }
         })
@@ -221,26 +186,20 @@ export default {
     },
     // 地图
     async gettopattackmap() {
-      try {
-        const res = await this.$Server('/gettopattackmap', 'POST')
+      /* try {
+        const {data} = await this.$axios.get(this.$apis.attackLocationSearch)
 
-        console.log('攻击地图', res)
+        console.log('攻击地图', data)
 
-        const { list } = res.data
-
-        this.topattackmap = list.map((item) => {
+      debugger
+        this.topattackmap = data.map((item) => {
           return {
             ...item
           }
         })
 
-      } catch (e) {console.log(e)}
-    },
-    goControl() {
-      this.$router.push({
-        name: 'HoneypotList'
-      })
-    },
+      } catch (e) {console.log(e)} */
+    }
   },
   beforeDestroy() {
     if (this.timer) {

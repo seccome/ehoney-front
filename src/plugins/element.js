@@ -52,6 +52,7 @@ import {
   Submenu,
   Breadcrumb,
   BreadcrumbItem,
+  Link
 } from 'element-ui'
 
 // import FilterDatePicker from '@/components/DatePicker'
@@ -109,6 +110,7 @@ Vue.use(Popconfirm)
 Vue.use(Breadcrumb)
 Vue.use(BreadcrumbItem)
 Vue.use(Card)
+Vue.use(Link)
 
 Vue.prototype.$ELEMENT = {
   zIndex: 3000,

@@ -11,7 +11,7 @@
         <p class="honeypot-topo-box__card_content red">{{attackedServerNum}}</p>
       </DataCard>
     </div>
-    <div id="topo-container" class="topo-container" ref="topoContainer"></div>
+    <div class="topo-container" ref="topoContainer"></div>
     </Card>
   </div>
 </template>
@@ -50,10 +50,10 @@ export default {
   },
   methods: {
     initWebSocket(){
-      const isFullPath =  /^(https|http)/.test(env[window.__env__ || 'default'].VUE_APP_API_URL)
+      const isFullPath =  /^(https|http)/.test(env[window.__env__ || 'default'].VUE_APP_PUBLIC_URL)
       //初始化
-      const baseUrl = isFullPath?env[window.__env__ || 'default'].VUE_APP_API_URL.replace(/(https|http)/,'ws'):`ws://${window.location.hostname}:8082${env[window.__env__ || 'default'].VUE_APP_API_URL}`
-      this.websocket = new WebSocket(`${baseUrl}/dbportmap`)
+      const baseUrl = isFullPath?env[window.__env__ || 'default'].VUE_APP_PUBLIC_URL.replace(/(https|http)/,'ws'):`ws://${window.location.hostname}:8082${env[window.__env__ || 'default'].VUE_APP_PUBLIC_URL}`
+      this.websocket = new WebSocket(`${baseUrl}/topology/map`)
       var that = this.websocket
       that.onopen = this.websocketonopen
       that.onerror = this.websocketonerror
@@ -73,11 +73,12 @@ export default {
       //数据接收
       //处理逻辑
       const msg = JSON.parse(e.data)
+      
       if (msg.type === 3) {
         const data = msg.content
         const {nodes, lines: edges, potNum, attackedPotNum} = data
-        const attackedEdges = edges.filter(edge =>this.isAttackedEdge(edge))
-        const virturalEdges = edges.filter(edge =>this.isVirturalEdge(edge))
+        const attackedEdges = edges.filter(edge =>edge.status === 'RED')
+        const virturalEdges = edges.filter(edge =>edge.status === 'VIRTUAL')
 
         attackedEdges.forEach(edge => {
           edge.type = 'circle-running'
@@ -92,10 +93,10 @@ export default {
             'HACK': 'hacker',
             'EDGE': 'server',
             'RELAY': 'server-net',
-            'POT': 'honeypot'
+            'POD': 'honeypot'
           }
           const img = nodeTypeImageMap[node.nodeType]
-          const nodeImageName = node.nodeType === 'POT' && isAttackedNode ? `${img}-red`: img
+          const nodeImageName = node.nodeType === 'POD' && isAttackedNode ? `${img}-red`: img
           node.img = require(`@/assets/images/${nodeImageName}.svg`)
           node.type = isAttackedNode ? 'background-animate' : 'image'
         });
@@ -107,9 +108,7 @@ export default {
         }
       }
     },
-    isVirturalEdge(edge) {
-      return edge.status === 'VIRTUAL'
-    },
+
     websocketclose(e){
       //关闭
       console.log("connection closed (" + e.code + ")");
@@ -118,6 +117,7 @@ export default {
       const container = this.$refs.topoContainer
       const width = container.clientWidth
       const height = container.clientHeight
+ 
       this.graph = new G6.Graph({
         container: container, // String | HTMLElement，必须，在 Step 1 中创建的容器 id 或容器本身
         width, // Number，必须，图的宽度
@@ -172,9 +172,7 @@ export default {
         // this.graph.fitCenter()
       };
     },
-    isAttackedEdge(edge) {
-      return edge.status === 'RED'
-    },
+
     isAttackedNode(node, attackedEdges) {
       return attackedEdges.filter(edge => edge.target === node.id).length > 0
     },
@@ -191,7 +189,7 @@ export default {
 @import "../../assets/style/var";
 
 .honeypot-topo-box {
-  padding: 20px;
+  padding: 10px;
   position: relative;
   min-height: 300px;
   overflow: auto;

@@ -1,164 +1,18 @@
-export const honeyStatusMap = [
-  {
-    value: 1,
-    label: '在线',
-  },
-  {
-    value: 2,
-    label: '离线',
-  },
-  {
-    value: 3,
-    label: '创建中',
-  },
-]
-export const probeStatusMap = [
-  {
-    value: 1,
-    label: '在线',
-  },
-  {
-    value: 2,
-    label: '离线',
-  },
-]
-export const protocalStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 3,
-    label: '创建中',
-  },
-  {
-    value: 4,
-    label: '下线中',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
-export const transparentStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 3,
-    label: '创建中',
-  },
-  {
-    value: 4,
-    label: '下线中',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
-export const signatureStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
-export const baitStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
-export const probeSignatureStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 3,
-    label: '创建中',
-  },
-  {
-    value: 4,
-    label: '下线中',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
-export const probeBaitStatusMap = [
-  {
-    value: 1,
-    label: '创建成功',
-  },
-  {
-    value: 2,
-    label: '创建失败',
-  },
-  {
-    value: 3,
-    label: '创建中',
-  },
-  {
-    value: 4,
-    label: '下线中',
-  },
-  {
-    value: 5,
-    label: '已撤销',
-  },
-  {
-    value: 6,
-    label: '撤销失败',
-  },
-]
+export const statusMap = {
+  1: { text: '下发中', color: 'grey--text' },
+  2: { text: '异常', color: 'red--text' },
+  3: { text: '成功', color: 'green--text' }
+};
+
+// 服务类型下拉选项
+export const ServiceTypeOptions = [
+  {text: '探针', value: 'probe'},
+  {text: '蜜罐', value: 'honeypot'}
+];
+
+// 表达检验规则
+export const rules = {
+  // pwdReg: /^.*(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%.^&*? ]).*$/,
+  pwdReg: /^.*(?=.*\d)(?=.*[a-zA-Z]).*$/,
+  pwdRegTip: '密码必须包含字母和数字'
+}

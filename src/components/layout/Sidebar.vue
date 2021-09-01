@@ -2,60 +2,68 @@
   <div class="sidebar">
     <div class="logo"></div>
     <div class="menu">
-      <el-menu
-        :default-active="defaultActive"
-        unique-opened
-        ref="menu"
-        router>
+      <el-menu :default-active="$route.path" unique-opened ref="menu" router>
         <template v-for="menu in menus">
-          <el-menu-item
-            v-if="!menu.children || !menu.children.length"
-            :key="menu.path"
-            :index="menu.path"> <i :class="menu.icon"></i>{{menu.text}}</el-menu-item>
-          <el-submenu
-            v-else
-            :key="menu.path"
-            :index="menu.path">
-            <template slot="title"> <div :class="menu.path.slice(1)"><i :class="menu.icon"></i>{{menu.text}}</div></template>
-            <el-menu-item
-              v-for="subMenu in menu.children"
-              :key="menu.path+subMenu.path"
-              :index="menu.path+subMenu.path"
-              :class="subMenu.path.slice(1)"
-              >{{subMenu.text}}</el-menu-item>
+          <el-menu-item v-if="!menu.children || !menu.children.length" :key="menu.path" :index="menu.path"> <i :class="menu.icon"></i>{{menu.text}}</el-menu-item>
+          <el-submenu v-else :key="menu.path" :index="menu.path">
+            <template slot="title">
+              <div :class="menu.path.slice(1)"><i :class="menu.icon"></i>{{menu.text}}</div>
+            </template>
+            <el-menu-item v-for="subMenu in menu.children" :key="menu.path+subMenu.path" :index="menu.path+subMenu.path" :class="subMenu.path.slice(1)">{{subMenu.text}}</el-menu-item>
           </el-submenu>
         </template>
       </el-menu>
     </div>
-
   </div>
 </template>
 
 <script>
 export default {
   name: 'sidebar',
-  data() {
+  data () {
     return {
       menus: [
         {
-          text: '密罐管理',
-          icon: 'esign-icon-icon_applications',
-          path: '/honeypot-manage',
+          text: '威胁感知',
+          icon: 'esign-icon-icon_attacks',
+          path: '/threaten-perception',
           children: [
             {
-              text: '密罐拓扑',
-              path: '/honeypot-topo',
+              text: '攻击事件',
+              path: '/traffic-attack',
             },
             {
-              text: '蜜罐列表',
-              path: '/honeypots',
+              text: 'Falco事件',
+              path: '/falco-event',
+            },
+            {
+              text: '密签事件',
+              path: '/token-track',
+            },
+            {
+              text: '溯源',
+              path: '/trace-source',
+            },
+            {
+              text: '节点拓扑',
+              path: '/honeypot-topo',
             },
           ]
         },
         {
-          text: '影子代理',
+          text: '密罐管理',
+          icon: 'esign-icon-icon_applications',
+          path: '/honeypots',
+        },
+        {
+          text: '探针管理',
+          icon: 'esign-icon-relation',
+          path: '/probes-list',
+        },
+        {
+          text: '代理管理',
           icon: 'esign-icon-icon_densitys',
-          path: '/shadow-agency',
+          path: '/proxy-manage',
           children: [
             {
               text: '协议转发',
@@ -63,103 +71,39 @@ export default {
             },
             {
               text: '透明转发',
-              path: '/transparent-forwarding',
+              path: '/protocol-transparent',
             },
           ]
         },
         {
           text: '诱捕管理',
-          icon: 'esign-icon-icon_decoy',
+          icon: 'esign-icon-icon_honeypotcluster',
           path: '/trap-manage',
           children: [
             {
-              text: '探针列表',
-              path: '/probes',
+              text: '密签管理',
+              path: '/token',
             },
             {
-              text: '自定义密签',
-              path: '/custom-signature',
+              text: '诱饵管理',
+              path: '/trap',
             },
             {
-              text: '自定义诱饵',
-              path: '/custom-decoy',
+              text: '协议类型',
+              path: '/protocol-type',
             },
-          ]
-        },
-
-        // {
-        //   text: '木马检测',
-        //   icon: 'esign-icon-icon_attacks',
-        //   path: '/trojans-detection',
-        //   children: [
-        //     {
-        //       text: '木马列表',
-        //       path: '/trojans',
-        //     },
-        //   ]
-        // },
-        {
-          text: '告警管理',
-          icon: 'esign-icon-icon_honeypotcluster',
-          path: '/alarm-manage',
-          children: [
             {
-              text: '告警列表',
-              path: '/alarms',
+              text: '镜像列表',
+              path: '/image-list',
             },
-            // {
-            //   text: '攻击溯源',
-            //   path: '/attack-tracing',
-            // },
           ]
         },
         {
           text: '系统设置',
           icon: 'esign-icon-icon_setting',
-          path: '/settings',
-          children: [
-            // {
-            //   text: '告警配置',
-            //   path: '/alarm',
-            // },
-            {
-              text: '镜像源配置',
-              path: '/mirror',
-            },
-            // {
-            //   text: 'Redis配置',
-            //   path: '/redisSetting',
-            // },
-            {
-              text: '镜像列表',
-              path: '/mirrors',
-            },
-            {
-              text: '协议配置',
-              path: '/treaty',
-            },
-            {
-              text: '密签配置',
-              path: '/trackingUrl',
-            },
-          ]
+          path: '/system-config',
         },
-
       ],
-      defaultActive: ''
-    }
-  },
-  created() {
-    this.defaultActive = this.$route.matched[1]?this.$route.matched[1].path:this.$route.path
-  },
-  watch: {
-    '$route.path':{
-      handler:function(newVal,oldVal){
-        const menuEle = this.$refs.menu
-        const index = this.$route.matched[1]?this.$route.matched[1].path:this.$route.path
-        menuEle.activeIndex =index
-        menuEle.updateActiveIndex(index)
-      },
     }
   }
 }
@@ -191,11 +135,11 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
     &::-webkit-scrollbar-thumb {
-      background-color:rgba(255,255,255, .1);
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
     &::-webkit-scrollbar-track {
-      background-color: #171B22;
+      background-color: #171b22;
     }
   }
   .el-menu .el-menu-item,
@@ -208,7 +152,7 @@ export default {
     background: @--background-color-black;
     border: none;
     font-size: 14px;
-    i{
+    i {
       margin-right: 10px;
     }
     &-item {
@@ -219,13 +163,14 @@ export default {
       i {
         color: #ddd;
       }
-      &:hover, &.is-active {
-        color: #0cfff8!important;
-        background: linear-gradient(270deg, rgba(37, 147, 243, 0) 0%, #105ae2 100%)!important;
+      &:hover,
+      &.is-active {
+        color: #0cfff8 !important;
+        background: linear-gradient(270deg, rgba(37, 147, 243, 0) 0%, #105ae2 100%) !important;
       }
       &.is-active {
         i {
-          color: #0cfff8!important;
+          color: #0cfff8 !important;
         }
         &::after {
           display: none;
@@ -234,7 +179,7 @@ export default {
     }
     &-item:hover {
       i {
-        color: #0cfff8!important;
+        color: #0cfff8 !important;
       }
     }
   }
@@ -245,17 +190,19 @@ export default {
       i {
         color: #ddd;
       }
-      &:hover, &.is-active {
-        color: #0cfff8!important;
-        background: linear-gradient(270deg, rgba(37, 147, 243, 0) 0%, #105ae2 100%)!important;
+      &:hover,
+      &.is-active {
+        color: #0cfff8 !important;
+        background: linear-gradient(270deg, rgba(37, 147, 243, 0) 0%, #105ae2 100%) !important;
         i {
-          color: #0cfff8!important;
+          color: #0cfff8 !important;
         }
       }
     }
     &.is-active {
-      .el-submenu__title, i {
-        color: #0cfff8!important;
+      .el-submenu__title,
+      i {
+        color: #0cfff8 !important;
       }
     }
   }

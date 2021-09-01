@@ -3,26 +3,26 @@
     <div class="logo"></div>
     <div class="login-wrapper">
       <div class="title">欺骗防御系统</div>
-      <el-form
-        :model="loginForm" :rules="loginRules" ref="loginFormRef" class="demo-ruleForm">
-        <el-form-item label="" prop="account">
-          <el-input v-model="loginForm.account"
-            size="medium"
-            prefix-icon="el-icon-message"
-            placeholder="请输入账号"></el-input>
+      <el-form v-if="isShowLogin" :model="loginForm" :rules="loginRules" ref="loginFormRef">
+        <el-form-item label="" prop="username">
+          <el-input v-model="loginForm.username" size="medium" prefix-icon="el-icon-message" placeholder="请输入账号"></el-input>
         </el-form-item>
         <el-form-item label="" prop="password">
-          <el-input v-model="loginForm.password"
-            type="password"
-            size="medium"
-            prefix-icon="el-icon-lock"
-            placeholder="请输入密码"
-            @keyup.enter="submit"></el-input>
+          <el-input v-model="loginForm.password" :type="showNewPwd?'text':'password'" size="medium" prefix-icon="el-icon-lock" placeholder="请输入密码" @keyup.native.enter="submit">
+            <template slot="suffix">
+              <i v-if="showNewPwd" class="iconfont esign-icon-hide" style="cursor:pointer" @click="showNewPwd=false"></i>
+              <i v-else class="el-icon-view" style="cursor:pointer" @click="showNewPwd=true"></i>
+            </template>
+          </el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="small" class="login-btn" @click="submit">登录</el-button>
+        <el-form-item class="mb-2">
+          <el-button type="primary" size="small" class="btn-block" @click="submit" :loading="loading">登 录</el-button>
+        </el-form-item>
+        <el-form-item class="ma-0">
+          <el-button type="success" size="small" class="btn-block" @click="isShowLogin=false">注 册</el-button>
         </el-form-item>
       </el-form>
+      <Register v-else @showLogin="isShowLogin=true" @loginSuccess="loginSuccess" />
     </div>
     <div class="copyright">
       Copyright ©{{ new Date().getFullYear() }} Seccome 团队 版权所有
@@ -31,12 +31,15 @@
 </template>
 
 <script>
+import Register from './Register';
+
 export default {
   name: 'login',
-  data() {
+  components: { Register },
+  data () {
     // const RegexPhone = /^(0|86|17951)?1[0-9]{10}$/
     // const RegEmail = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/
-    const checkAccount = (rule, value, callback) => {
+    const checkusername = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('请输入账号'))
       }
@@ -55,50 +58,45 @@ export default {
       callback()
     }
     return {
+      loading: false,
+      isShowLogin: true,
+      showNewPwd: false,
       loginRules: {
-        account: [
-          { validator: checkAccount, trigger: 'blur' }
+        username: [
+          { validator: checkusername, trigger: 'blur' }
         ],
         password: [
           { validator: checkPass, trigger: 'blur' }
         ]
       },
       loginForm: {
-        account: '',
+        username: '',
         password: ''
       },
     }
   },
   methods: {
-    async submit() {
+    async submit () {
       await this.$refs.loginFormRef.validate()
-
-      const res = await this.$Server('/login', 'POST', {
-        Username: this.loginForm.account,
-        Password: this.loginForm.password,
-      })
-      const {code, data} = res
-      if (res.code === 0) {
-        const isFirstLogin = data === 1
-        window.sessionStorage.setItem('isFirstLogin', isFirstLogin)
-        window.sessionStorage.removeItem('visitedPage')
-        this.$router.push('/')
-      }
-
+      this.loading = true;
+      this.$axios.post(this.$apis.login, this.loginForm).then(res => {
+        this.loading = false;
+        this.loginSuccess(res);
+      }).catch(err => {
+        this.loading = false;
+      });
     },
-    onEnterPress(e) {
-      const code = e.keyCode || e.which
-      if (code === 13) {
-        this.submit()
-      }
-    },
+
+    /**
+     * 登录成功处理
+     */
+    loginSuccess (res) {
+      localStorage.setItem('userName', res.data.name);
+      localStorage.setItem('token', res.data.token);
+      this.$router.push('/');
+    }
   },
-  mounted() {
-    document.addEventListener('keydown', this.onEnterPress)
-  },
-  beforeDestroy() {
-    document.removeEventListener("keydown", this.onEnterPress);
-  }
+
 }
 </script>
 
@@ -109,7 +107,7 @@ export default {
   height: 100%;
   overflow: hidden;
   background-color: #1c1c1c;
-  background: url("./login_bg.png") no-repeat;
+  background: url('./login_bg.png') no-repeat;
   background-size: cover;
 
   .login-wrapper {
@@ -118,7 +116,7 @@ export default {
     left: 50%;
     padding: 24px;
     width: 400px;
-    height: 360px;
+    height: 420px;
     border-radius: 2px;
     background: #ffffff;
     transform: translateX(-50%) translateY(-50%);
@@ -133,12 +131,6 @@ export default {
       color: #333333;
     }
 
-    .login-btn {
-      height: 48px;
-      width: 100%;
-      font-size: 16px;
-    }
-
     /deep/ .el-input__inner {
       //letter-spacing: 1px;
       height: 40px;
@@ -148,7 +140,6 @@ export default {
 
     .el-form-item {
       margin-bottom: 24px;
-
     }
 
     .el-form-item:last-child {
@@ -161,7 +152,7 @@ export default {
     bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
-    color: #DDDDDD;
+    color: #dddddd;
     font-size: 12px;
   }
 

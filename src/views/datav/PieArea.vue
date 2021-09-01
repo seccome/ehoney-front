@@ -155,7 +155,6 @@ export default {
       ]
 
       const value = this.chartData.slice(0, 3).map((item, i) => {
-        console.log('item', item)
         return {
           value: item.areacount,
           name: item.province,
@@ -164,7 +163,6 @@ export default {
           }
         }
       })
-      console.log('value', value)
       config.series[0].data = value
 
       this.myChart.setOption(config)
