@@ -3,7 +3,7 @@
     <div class="logo"></div>
     <div class="login-wrapper">
       <div class="title">欺骗防御系统</div>
-      <el-form v-if="isShowLogin" :model="loginForm" :rules="loginRules" ref="loginFormRef">
+      <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef">
         <el-form-item label="" prop="username">
           <el-input v-model="loginForm.username" size="medium" prefix-icon="el-icon-message" placeholder="请输入账号"></el-input>
         </el-form-item>
@@ -18,11 +18,7 @@
         <el-form-item class="mb-2">
           <el-button type="primary" size="small" class="btn-block" @click="submit" :loading="loading">登 录</el-button>
         </el-form-item>
-        <el-form-item class="ma-0">
-          <el-button type="success" size="small" class="btn-block" @click="isShowLogin=false">注 册</el-button>
-        </el-form-item>
       </el-form>
-      <Register v-else @showLogin="isShowLogin=true" @loginSuccess="loginSuccess" />
     </div>
     <div class="copyright">
       Copyright ©{{ new Date().getFullYear() }} Seccome 团队 版权所有
@@ -31,11 +27,8 @@
 </template>
 
 <script>
-import Register from './Register';
-
 export default {
   name: 'login',
-  components: { Register },
   data () {
     // const RegexPhone = /^(0|86|17951)?1[0-9]{10}$/
     // const RegEmail = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/
@@ -116,7 +109,7 @@ export default {
     left: 50%;
     padding: 24px;
     width: 400px;
-    height: 420px;
+    height: 350px;
     border-radius: 2px;
     background: #ffffff;
     transform: translateX(-50%) translateY(-50%);
